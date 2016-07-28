@@ -1,0 +1,131 @@
+{% load static %}
+{% load custom_tags %}
+
+<div class="container">
+
+    <div class="card" >
+        <div class="card-header">
+            <h2>Client Management</h2>
+
+        </div>
+
+        <table id="data-table-command" class="table table-striped table-vmiddle">
+            <thead>
+                <tr>
+                    <th data-column-id="name">Name</th>
+                    <th data-column-id="email">Email</th>
+                    <th data-column-id="user_name">Username</th>
+                    <th data-column-id="register_date">Register Date</th>
+                    <th data-column-id="rate">Price Rate</th>
+                    <th data-column-id="action" data-formatter="action">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>{{ client.first_name }} {{ client.last_name }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.user_name }}</td>
+                    <td>{{ client.register_date }}</td>
+                    <td>{{ rates|getvalue:client }}</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+    <!-- Data Table -->
+<script type="text/javascript">
+    $(document).ready(function(){
+
+
+        $("#data-table-command").bootgrid({
+            css: {
+                icon: 'zmdi icon',
+                iconColumns: 'zmdi-view-module',
+                iconDown: 'zmdi-expand-more',
+                iconRefresh: 'zmdi-refresh',
+                iconUp: 'zmdi-expand-less'
+
+            },
+            formatters: {
+                "action": function(column, row) {
+                    return '<button type="button" class="btn btn-success waves-effect btn-xs" data-toggle="dropdown" onClick="edit_client(\''+ row['email'] +'\')">edit</button>\
+                                <button type="button" class="btn btn-danger waves-effect btn-xs" data-toggle="dropdown" onClick="remove_client(\''+ row['email'] +'\')">remove</button>'
+                }
+            }
+        }).
+        on("loaded.rs.jquery.bootgrid", function (e)
+        {
+            // add create button
+            $(".actions").html('<a href="javascript:create_client()" class="btn btn-primary waves-effect" style="width:100px;">Create</a>')
+            $(".actionBar").attr('style', 'text-align: right;');
+            $(".actions").attr('style', 'vertical-align: bottom;');
+        })
+    });
+
+    function edit_client(email){
+
+        $.ajax({
+            type: 'get',
+            url: '{% url "get-client" %}',
+            data: {'email':email, 'role':2},
+            dataType: "json",
+            success: function (msg) {
+                $(".first_name").val(msg['first_name'])
+                $(".last_name").val(msg['last_name'])
+                $(".email").val(msg['email'])
+                $(".user_name").val(msg['user_name'])
+                $(".password").val(msg['password'])
+                $(".rate").val(msg['rate'])
+
+                $(".c-type").val(msg['id'])
+
+                $(".create-button").html("Edit")
+                $('#create-client').modal('show')
+            }
+        })
+
+        // show edit dialog
+        $('#create-client').modal('show')
+    }
+
+    function create_client(){
+        $(".first_name").val("")
+        $(".last_name").val("")
+        $(".email").val("")
+        $(".user_name").val("")
+        $(".password").val("")
+        $(".rate").val("")
+
+        $(".c-type").val("-1")
+
+        $(".create-button").html("Create")
+        $('#create-client').modal('show')
+    }
+
+    function remove_client(email){
+        option = {
+                    title: "Do you really want to delete this client?",
+                    text: "",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes",
+                    closeOnConfirm: true
+                }
+        swal(option, function(){
+            $.ajax({
+                type: 'post',
+                url: '{% url "delete-client" %}',
+                data: {'email': email, 'role': 2},
+                success: function (msg) {
+                    $("#content").html(msg);
+                }
+            });
+        });
+    }
+</script>

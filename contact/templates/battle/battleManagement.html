@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Battle{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+        <section id="content" style="margin-top:50px;">
+
+        </section>
+
+    <div class="modal fade" id="create-user" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <form name="createForm" method="post" id="createForm">
+                {% csrf_token %}
+                <input type="hidden" name="type" class="create-battle-type" value="-1"/>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title create-title">Create Battle</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="zmdi zmdi-tag"></i></span>
+                            <div class="fg-line">
+                                    <input type="text" name="hashtag1" class="form-control hashtag1" placeholder="HashTag1" required>
+                            </div>
+                        </div>
+                        <br/>
+
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="zmdi zmdi-tag"></i></span>
+                            <div class="fg-line">
+                                    <input type="text" name="hashtag2" class="form-control hashtag2" placeholder="HashTag2" required>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <div class="input-group form-group">
+                            <span class="input-group-addon"><i class="zmdi zmdi-calendar"></i></span>
+                                <div class="dtp-container fg-line">
+                                <input type='text' class="form-control date-time-picker start" name="start" placeholder="Start Date" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group form-group">
+                            <span class="input-group-addon"><i class="zmdi zmdi-calendar"></i></span>
+                                <div class="dtp-container fg-line">
+                                <input type='text' class="form-control date-time-picker end" name="end" placeholder="End Date" required>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-link create-button">Create</button>
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="result" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true"
+        style="font-size: 12px;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Result</h4>
+                    </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="res-hashtag1"></th>
+                                <th class="res-hashtag2"></th>
+                                <th>Winner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Number of typos</td>
+                                <td class="res-typo1"></td>
+                                <td class="res-typo2"></td>
+                                <td class="winner"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script src="{% static 'vendors/bootgrid/jquery.bootgrid.updated.min.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/bootstrap-select/dist/js/bootstrap-select.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+
+    <script>
+        $(document).ready(function(){
+
+            // get battle list
+            $.ajax({
+                type: 'get',
+                url: '{% url 'battle-list' %}',
+
+                success: function (msg) {
+                    $("#content").html(msg);
+                },
+                error: function (x, e) {
+                    alert("The call to the server side failed. " + x.responseText);
+                }
+            });
+
+            // register event on form, not submit button
+            $("#createForm").submit(onSubmit)
+        })
+
+        function onSubmit()
+        {
+            var start = new Date($(".start").val());
+            var end = new Date($(".end").val())
+
+            // validate start and end date.
+            if(start > end) {
+                alert("The end date must be behind the start date.")
+                return false
+            }
+        }
+    </script>
+{% endblock %}

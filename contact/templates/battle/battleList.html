@@ -1,0 +1,70 @@
+{% load static %}
+
+<div class="container">
+
+    <div class="card" >
+        <div class="card-header">
+            <h2>Contacts Management</h2>
+
+        </div>
+
+        <table id="data-table-command" class="table table-striped table-vmiddle">
+            <thead>
+                <tr>
+                    <th data-column-id="hashtag1">Hash Tag 1</th>
+                    <th data-column-id="hashtag2">Hash Tag 2</th>
+                    <th data-column-id="start">Start</th>
+                    <th data-column-id="end">End</th>
+                    <th data-column-id="action" data-formatter="action">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for battle in battles %}
+                <tr>
+                    <td>{{ battle.hashtag1 }}</td>
+                    <td>{{ battle.hashtag2 }}</td>
+                    <td>{{ battle.start }}</td>
+                    <td>{{ battle.end}}</td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+    <!-- Data Table -->
+<script type="text/javascript">
+    $(document).ready(function(){
+
+
+        $("#data-table-command").bootgrid({
+            css: {
+                icon: 'zmdi icon',
+                iconColumns: 'zmdi-view-module',
+                iconDown: 'zmdi-expand-more',
+                iconRefresh: 'zmdi-refresh',
+                iconUp: 'zmdi-expand-less'
+
+            },
+            formatters: {
+                "action": function(column, row) {
+                    return '<div class="dropdown" data-animation="flipInX,flipOutX">\
+                                <button type="button" class="btn btn-primary waves-effect" data-toggle="dropdown" onclick="menu(this)">...</button>\
+                                <ul class="dropdown-menu">\
+                                    <li><a href="javascript:changeAttr(\'status\', 1, \''+ row['email'] +'\')">Active</a></li>\
+                                    <li><a href="javascript:changeAttr(\'status\', 0, \''+ row['email'] +'\')">Inactive</a></li>\
+                                    <li><a href="javascript:editUser(\''+ row['email'] +'\')">Edit</a></li>\
+                                    <li class="divider"></li>\
+                                    <li style="background-color: pink;"><a href="javascript:changeAttr(\'remove\', 0, \''+ row['email'] +'\')">Remove</a></li>\
+                                </ul>\
+                            </div>'
+                }
+            }
+        })
+    });
+
+</script>

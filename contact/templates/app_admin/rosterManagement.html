@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sifted Admin{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section id="content" style="margin-top:50px;">
+
+    </section>
+
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script src="{% static 'vendors/bootgrid/jquery.bootgrid.updated.min.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/bootstrap-select/dist/js/bootstrap-select.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/jquery.validate.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            // when loading page, get users from server to show them in table.
+            $.ajax({
+                type: 'get',
+                data: {'meal_id': '{{ meal_id }}'},
+                url: '{% url "roster-list" %}',
+                success: function (msg) {
+                    $("#content").html(msg);
+                }
+            });
+
+
+            $(".left-menu").each(function(){
+                $(this).removeClass("active")
+            })
+
+            $(".meal-management").addClass("active")
+        })
+    </script>
+{% endblock %}

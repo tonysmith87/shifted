@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sifted Admin{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section id="content" style="margin-top:50px;">
+
+    </section>
+
+    <div class="modal fade" id="create-client" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <form name="createForm" method="post" id="createForm">
+                {% csrf_token %}
+                <input type="hidden" name="type" class="c-type" method="post" value="-1"/>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title create-title">Create Client</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-account zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <input type="text" name="first_name" class="form-control first_name" placeholder="First Name" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-account zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <input type="text" name="last_name" class="form-control last_name" placeholder="Last Name" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-email zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <input type="email" name="email" class="form-control email" placeholder="Email" required onblur="check('email', this)">
+                                    <div class="alert-danger alert-email" style="display: none;"></div>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-account-box zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <input type="text" name="user_name" class="form-control user_name" placeholder="User Name" required onblur="check('username', this)">
+                                    <div class="alert-danger alert-username" style="display: none;"></div>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-lock zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <input type="password" name="password" class="form-control password" placeholder="Password" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-money zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                        <input type="number" name="rate" class="form-control rate" placeholder="Rate" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-link create-button">Create</button>
+                        <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script src="{% static 'vendors/bootgrid/jquery.bootgrid.updated.min.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/bootstrap-select/dist/js/bootstrap-select.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/jquery.validate.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            // when loading page, get users from server to show them in table.
+            $.ajax({
+                type: 'get',
+                data: {'role': 2},
+                url: '{% url "client-list" %}',
+                success: function (msg) {
+                    $("#content").html(msg);
+                }
+            });
+
+            // register event on form, not submit button
+            $('#createForm').submit(onSubmit)
+
+            $(".left-menu").each(function(){
+                $(this).removeClass("active")
+            })
+
+            $(".client-management").addClass("active")
+        })
+
+        function check(type, obj){
+            value = $(obj).val()
+            user_id = $(".c-type").val()
+
+            $.ajax({
+                type: 'get',
+                url: '{% url "check-client" %}',
+                data: {'type': type, 'value': value, 'user_id': user_id},
+                dataType: 'json',
+                success: function (res) {
+                    if(res['existed']){
+                        $(".alert-"+type).attr("style", "display:block")
+                        $(".alert-"+type).html("This " + type + " is already used!")
+                    }
+                    else{
+                        $(".alert-"+type).attr("style", "display:none")
+                        $(".alert-"+type).html("")
+                    }
+                }
+            });
+
+        }
+
+        function onSubmit(){
+            // get error message.
+            username = $(".alert-username").html()
+            email = $(".alert-email").html()
+            // if there is error message, cancel submitting.
+            if (username != "" || email != "")
+                return false
+        }
+    </script>
+{% endblock %}

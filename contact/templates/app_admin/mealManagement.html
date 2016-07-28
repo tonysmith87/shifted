@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sifted Admin{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section id="content" style="margin-top:50px;">
+
+    </section>
+
+    <div class="modal fade" id="create-meal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <form name="createForm" method="post" id="createForm">
+                {% csrf_token %}
+                <input type="hidden" name="type" class="c-type" method="post" value="-1"/>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title create-title">Create Meal</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-store zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <input type="text" name="name" class="form-control meal_name" placeholder="Meal Name" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-collection-text zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <textarea class="form-control input-sm description" name="description" placeholder="Description" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-money zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                        <input type="number" name="price" class="form-control price" placeholder="Price" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-pin zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                        <input type="text" name="location" class="form-control location" placeholder="Location" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-calendar-check zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <input type='text' class="form-control date-picker date" name="date" placeholder="Date" required>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-account zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <select class="selectpicker" name="client" id="assignUsers" data-live-search="true">
+                                        {% for tp_user in clients %}
+                                        <option value="{{ tp_user.id }}">{{ tp_user.user_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <br/>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-link create-button">Create</button>
+                        <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script src="{% static 'vendors/bootgrid/jquery.bootgrid.updated.min.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/bootstrap-select/dist/js/bootstrap-select.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/jquery.validate.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            // when loading page, get users from server to show them in table.
+            $.ajax({
+                type: 'get',
+                url: '{% url "meal-list" %}',
+                success: function (msg) {
+                    $("#content").html(msg);
+                }
+            });
+
+            $(".left-menu").each(function(){
+                $(this).removeClass("active")
+            })
+
+            $(".meal-management").addClass("active")
+        })
+    </script>
+{% endblock %}
