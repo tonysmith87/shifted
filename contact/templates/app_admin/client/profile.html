@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sifted Admin{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section id="content" style="margin-top:50px;">
+    <div class="container">
+
+    <div class="card" id="profile-main">
+        <div class="pmb-block">
+            <div class="pmbb-header">
+                <h2><i class="zmdi zmdi-account m-r-5"></i> Profile</h2>
+            </div>
+            <div class="pmbb-body p-l-30">
+                <div class="pmbb-view">
+                    <dl class="dl-horizontal">
+                        <dt>Company Name</dt>
+                        <dd>{{ client.person.first_name }}</dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>Email</dt>
+                        <dd>{{ client.person.email }}</dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>User Name</dt>
+                        <dd>{{ client.person.user_name }}</dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>Register Date</dt>
+                        <dd>{{ client.person.register_date }}</dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>Password</dt>
+                        <dd>{{ client.person.password }}</dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>Rate</dt>
+                        <dd>{{ client.rate }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </section>
+
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script>
+        $(document).ready(function(){
+            $(".left-menu").each(function(){
+                $(this).removeClass("active")
+            })
+
+            $(".profile").addClass("active")
+        })
+    </script>
+{% endblock %}

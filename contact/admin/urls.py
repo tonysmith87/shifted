@@ -25,4 +25,11 @@ urlpatterns = [
 
     url(r'get-meal/$', views.get_meal, name="get-meal"),
 
+    url(r'meal-view/$', views.meal_view, name="meal-view"),
+    url(r'send-comment/$', views.send_comment, name="send-comment"),
+    url(r'client-profile/$', views.client_profile, name="client-profile"),
+
+    url(r'staff-list/$', views.staff_list, name="staff-list"),
+
+    url(r'register-staff/$', views.register_staff, name="register-staff"),
 ]

@@ -47,6 +47,7 @@ class Meal(models.Model):
     price = models.TextField(blank=True, null=True)  # This field type is a guess.
     date = models.CharField(max_length=100, blank=True, null=True)
     client = models.ForeignKey('Client')
+    meal_comment = models.TextField(blank=True, null=True, default="")
 
     class Meta:
         db_table = 'Meal'
@@ -79,6 +80,8 @@ class Staff(models.Model):
     id = models.IntegerField(primary_key=True)  # AutoField?
     person = models.ForeignKey('Person')
     rate = models.IntegerField(default=0, null=True)
+    client = models.ForeignKey('Client')
+
 
     class Meta:
         db_table = 'Staff'

@@ -82,7 +82,16 @@
                                 </div>
                             </div>
                             <br/>
-
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="zmdi zmdi-account zmdi-hc-fw"></i></span>
+                                <div class="fg-line">
+                                    <select class="selectpicker" name="client" id="assignUsers" data-live-search="true">
+                                        {% for tp_user in clients %}
+                                        <option value="{{ tp_user.id }}">{{ tp_user.person.user_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">

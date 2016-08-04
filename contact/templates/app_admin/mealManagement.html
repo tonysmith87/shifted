@@ -78,7 +78,7 @@
                                 <div class="fg-line">
                                     <select class="selectpicker" name="client" id="assignUsers" data-live-search="true">
                                         {% for tp_user in clients %}
-                                        <option value="{{ tp_user.id }}">{{ tp_user.user_name }}</option>
+                                        <option value="{{ tp_user.id }}">{{ tp_user.person.user_name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -125,5 +125,7 @@
 
             $(".meal-management").addClass("active")
         })
+
+
     </script>
 {% endblock %}

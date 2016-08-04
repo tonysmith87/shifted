@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sifted Admin{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section id="content" style="margin-top:50px;">
+        <div class="container">
+
+            <div class="card" >
+                <div class="card-header">
+                    <h2>Meal Management</h2>
+
+                </div>
+
+                <table id="data-table-command" class="table table-striped table-vmiddle">
+                    <thead>
+                        <tr>
+                            <th data-column-id="id" data-visible="false">ID</th>
+                            <th data-column-id="name">Name</th>
+                            <th data-column-id="description">Description</th>
+                            <th data-column-id="price">Price</th>
+                            <th data-column-id="location">Location</th>
+                            <th data-column-id="date">Date</th>
+                            <th data-column-id="action" data-formatter="action">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for meal in meals %}
+                        <tr>
+                            <td>{{ meal.id }}</td>
+                            <td>{{ meal.name }}</td>
+                            <td>{{ meal.description }}</td>
+                            <td>{{ meal.price }}</td>
+                            <td>{{ meal.location }}</td>
+                            <td>{{ meal.date }}</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="meal-comment" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <input type="hidden" name="meal_id" class="meal_id" value="-1"/>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title comment-title">Send Message</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="zmdi zmdi-collection-text zmdi-hc-fw"></i></span>
+                            <div class="fg-line">
+                                <textarea class="form-control input-sm comment" name="comment" placeholder="Comment" rows="5"></textarea>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" onclick="send_comment()">Send</button>
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script src="{% static 'vendors/bootgrid/jquery.bootgrid.updated.min.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/bootstrap-select/dist/js/bootstrap-select.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/jquery.validate.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            $("#data-table-command").bootgrid({
+                css: {
+                    icon: 'zmdi icon',
+                    iconColumns: 'zmdi-view-module',
+                    iconDown: 'zmdi-expand-more',
+                    iconRefresh: 'zmdi-refresh',
+                    iconUp: 'zmdi-expand-less'
+
+                },
+                formatters: {
+                    "action": function(column, row) {
+                        return '<button type="button" class="btn btn-success waves-effect btn-xs" data-toggle="dropdown" onClick="open_comment(\''+ row['id'] +'\')">comment</button> \
+                                    <button type="button" class="btn btn-warning waves-effect btn-xs" data-toggle="dropdown" onClick="get_roster(\''+ row['id'] +'\')">rosters</button>'
+                    }
+                }
+            }).
+            on("loaded.rs.jquery.bootgrid", function (e)
+            {
+                // add create button
+                $(".actions").html('')
+                $(".actionBar").attr('style', 'text-align: right;');
+                $(".actions").attr('style', 'vertical-align: bottom;');
+            })
+
+            $(".left-menu").each(function(){
+                $(this).removeClass("active")
+            })
+
+            $(".meal-view").addClass("active")
+        })
+
+        function get_roster(meal_id){
+            this.document.location.href = "{% url 'rosters' %}?meal_id=" + meal_id.toString()
+        }
+
+        function open_comment(meal_id){
+            $(".meal_id").val(meal_id)
+            $("#meal-comment").modal("show")
+        }
+
+        function send_comment(){
+            meal_id = $(".meal_id").val()
+            comment = $(".comment").val()
+
+            $.ajax({
+                type: 'get',
+                url: '{% url "send-comment" %}',
+                data: {'meal_id': meal_id, 'comment': comment},
+                success: function (msg) {
+                    $("#meal-comment").modal("hide");
+                }
+            });
+        }
+    </script>
+{% endblock %}

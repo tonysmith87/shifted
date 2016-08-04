@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sifted Admin{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/animate.css/pepper-ginder-custom.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+        table.ui-datepicker-calendar{
+            background-color: rgba(255,0,0,0);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section id="content" style="margin-top:50px;">
+        <div class="container">
+            <div class="card">
+                <form class="form-horizontal" role="form">
+                    <div class="card-header">
+                        <h2>Sign up</h2>
+                    </div>
+
+                    <div class="card-body card-padding">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">First Name</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="text" class="form-control input-sm first-name" placeholder="First Name" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Last Name</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="password" class="form-control input-sm last-name" placeholder="Last Name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">User Name</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="text" class="form-control input-sm user-name" placeholder="User Name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Email</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="email" class="form-control input-sm last-name" placeholder="Email">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Password</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="password" class="form-control input-sm last-name" placeholder="Password">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Rate</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="number" class="form-control input-sm rate" placeholder="Rate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Company</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <select class="selectpicker client" name="client" data-live-search="true">
+                                        {% for tp_user in clients %}
+                                        <option value="{{ tp_user.id }}">{{ tp_user.person.first_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Restrictions</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <select class="selectpicker restrictions" name="restrictions">
+                                        <option value="0">None</option>
+                                        <option value="1">Vegan</option>
+                                        <option value="2">Veg</option>
+                                        <option value="3">Paleo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Apply</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="checkbox" value="option1" name="apply">
+                                        <i class="input-helper"></i>
+                                        Gluten Free
+                                    </label>
+                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="checkbox" value="option2" name="apply">
+                                        <i class="input-helper"></i>
+                                        Dairy Free
+                                    </label>
+                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="checkbox" value="option3" name="apply">
+                                        <i class="input-helper"></i>
+                                        Soy Free
+                                    </label>
+                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="checkbox" value="option3" name="apply">
+                                        <i class="input-helper"></i>
+                                        Other
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Absent</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <li class="demo">
+                                        <div id="withAltField" class="box">
+                                            <input type="text" id="altField"  class="form-control input-sm rate" value="09/19/2014, 09/21/2014" >
+                                            <div id="with-altField"></div>
+                                        </div>
+                                        <div class="code-box" style="display: None;">
+                                            <h4>Code used</h4>
+                                            <pre class="code prettyprint">
+                                                $('#with-altField').multiDatesPicker({
+                                                altField: '#altField'
+                                                });</pre>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary btn-sm">Sign up</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+    </section>
+
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script src="{% static 'vendors/bower_components/bootstrap-select/dist/js/bootstrap-select.js' %}"></script>
+
+    <script src="{% static 'vendors/bower_components/jquery/dist/jquery-ui-1.11.1.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/jquery/dist/jquery-ui.multidatespicker.js' %}"></script>
+
+    <script>
+        var latestMDPver = $.ui.multiDatesPicker.version;
+        var lastMDPupdate = '2014-09-19';
+
+        $(document).ready(function(){
+            // Version //
+				//$('title').append(' v' + latestMDPver);
+				$('.mdp-version').text('v' + latestMDPver);
+				$('#mdp-title').attr('title', 'last update: ' + lastMDPupdate);
+
+				// Documentation //
+				$('i:contains(type)').attr('title', '[Optional] accepted values are: "allowed" [default]; "disabled".');
+				$('i:contains(format)').attr('title', '[Optional] accepted values are: "string" [default]; "object".');
+				$('#how-to h4').each(function () {
+					var a = $(this).closest('li').attr('id');
+					$(this).wrap('<'+'a href="#'+a+'"></'+'a>');
+				});
+				$('#demos .demo').each(function () {
+					var id = $(this).find('.box').attr('id') + '-demo';
+					$(this).attr('id', id)
+						.find('h3').wrapInner('<'+'a href="#'+id+'"></'+'a>');
+				});
+
+				// Run Demos
+				$('.demo .code').each(function() {
+					eval($(this).attr('title','NEW: edit this code and test it!').text());
+					this.contentEditable = true;
+				}).focus(function() {
+					if(!$(this).next().hasClass('test'))
+						$(this)
+							.after('<button class="test">test</button>')
+							.next('.test').click(function() {
+								$(this).closest('.demo').find('.hasDatepicker').multiDatesPicker('destroy');
+								eval($(this).prev().text());
+								$(this).remove();
+							});
+				});
+        })
+    </script>
+{% endblock %}
+
+

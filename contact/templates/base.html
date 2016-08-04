@@ -39,6 +39,7 @@
 
 
             <li class="pull-right">
+                {% if user.id %}
                 <ul class="top-menu">
                     <li id="toggle-width">
                         <div class="toggle-switch">
@@ -50,6 +51,7 @@
                          Hi, {{ user.username }} <a href="{% url 'admin-logout' %}">Log out</a>
                     </li>
                 </ul>
+                {% endif %}
             </li>
         </ul>
 
@@ -65,29 +67,34 @@
     <section id="main" data-layout="layout-1">
         <aside id="sidebar" class="sidebar c-overflow">
             <ul class="main-menu">
-                <li class="left-menu active client-management">
-                    <a href="{% url 'client-management' %}"><i class="zmdi zmdi-home"></i> Client Management</a>
-                </li>
-                <li class="left-menu staff-management">
-                    <a href="{% url 'staff-management' %}"><i class="zmdi zmdi-home"></i> Staff Management</a>
-                </li>
-                <li class="left-menu meal-management">
-                    <a href="{% url 'meal-management' %}"><i class="zmdi zmdi-home"></i> Meal Management</a>
-                </li>
-                <!-- <li class="sub-menu">
-                    <a href=""><i class="zmdi zmdi-view-compact"></i> Headers</a>
-                    <ul>
-                        <li><a href="textual-menu.html">Textual menu</a></li>
-                        <li><a href="image-logo.html">Image logo</a></li>
-                        <li><a href="top-mainmenu.html">Mainmenu on top</a></li>
-                    </ul>
-                </li> -->
+                {% if user.role == 1 %}
+                    <li class="left-menu active client-management">
+                        <a href="{% url 'client-management' %}"><i class="zmdi zmdi-home"></i> Client Management</a>
+                    </li>
+                    <li class="left-menu staff-management">
+                        <a href="{% url 'staff-management' %}"><i class="zmdi zmdi-home"></i> Staff Management</a>
+                    </li>
+                    <li class="left-menu meal-management">
+                        <a href="{% url 'meal-management' %}"><i class="zmdi zmdi-home"></i> Meal Management</a>
+                    </li>
+                {% elif user.role == 2 %}
+                    <li class="left-menu active meal-view">
+                        <a href="{% url 'meal-view' %}"><i class="zmdi zmdi-home"></i> Meal Management</a>
+                    </li>
+                    <li class="left-menu profile">
+                        <a href="{% url 'client-profile' %}"><i class="zmdi zmdi-home"></i> Profile</a>
+                    </li>
+                    <li class="left-menu staff-list">
+                        <a href="{% url 'staff-list' %}"><i class="zmdi zmdi-home"></i> Staff Management</a>
+                    </li>
+                {% endif %}
             </ul>
         </aside>
         {% block content %}{% endblock %}
     </section>
 
     <footer id="footer">
+
     {% block footer %}{% endblock %}
     </footer>
 

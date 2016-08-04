@@ -18,6 +18,7 @@
                     <th data-column-id="price">Price</th>
                     <th data-column-id="location">Location</th>
                     <th data-column-id="date">Date</th>
+                    <th data-column-id="client">Client</th>
                     <th data-column-id="action" data-formatter="action">Action</th>
                 </tr>
             </thead>
@@ -30,6 +31,7 @@
                     <td>{{ meal.price }}</td>
                     <td>{{ meal.location }}</td>
                     <td>{{ meal.date }}</td>
+                    <td>{{ meal.client.person.user_name }}</td>
                 </tr>
                 {% endfor %}
 
@@ -41,8 +43,6 @@
     <!-- Data Table -->
 <script type="text/javascript">
     $(document).ready(function(){
-
-
         $("#data-table-command").bootgrid({
             css: {
                 icon: 'zmdi icon',

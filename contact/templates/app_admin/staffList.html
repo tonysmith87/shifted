@@ -17,17 +17,19 @@
                     <th data-column-id="user_name">Username</th>
                     <th data-column-id="register_date">Register Date</th>
                     <th data-column-id="rate">Price Rate</th>
+                    <th data-column-id="client">Client</th>
                     <th data-column-id="action" data-formatter="action">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for client in clients %}
+                {% for staff in clients %}
                 <tr>
-                    <td>{{ client.first_name }} {{ client.last_name }}</td>
-                    <td>{{ client.email }}</td>
-                    <td>{{ client.user_name }}</td>
-                    <td>{{ client.register_date }}</td>
-                    <td>{{ rates|getvalue:client }}</td>
+                    <td>{{ staff.first_name }} {{ staff.last_name }}</td>
+                    <td>{{ staff.email }}</td>
+                    <td>{{ staff.user_name }}</td>
+                    <td>{{ staff.register_date }}</td>
+                    <td>{{ rates|getvalue:staff }}</td>
+                    <td>{{ client_name|getvalue:staff }}</td>
                 </tr>
                 {% endfor %}
 
@@ -35,8 +37,6 @@
         </table>
     </div>
 </div>
-
-
 
     <!-- Data Table -->
 <script type="text/javascript">

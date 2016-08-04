@@ -37,8 +37,12 @@ def login(request):
 
             user[0].last_login = datetime.datetime.now().strftime('%Y-%m-%d')
             user[0].save()
-
-            return redirect("/admin/client-management")
+            if user[0].role == 1:
+                return redirect("/admin/client-management")
+            elif user[0].role == 2:
+                return redirect("/admin/meal-view")
+            else:
+                return redirect("/admin/login/")
 
     return render_to_response('app_admin/login.html', locals(), context_instance=RequestContext(request))
 
@@ -65,7 +69,6 @@ def client_management(request):
             person.register_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
         person.first_name = request.POST['first_name']
-        person.last_name = request.POST['last_name']
         person.email = request.POST['email']
         person.password = request.POST['password']
         person.user_name = request.POST['user_name']
@@ -94,11 +97,14 @@ def client_list(request):
     clients = Person.objects.filter(role=role)
 
     rates = dict()
+    client_name = dict()
     for client in clients:
         if role == 2:
             rate = Client.objects.filter(person_id=client.id)[0].rate
         else:
             rate = Staff.objects.filter(person_id=client.id)[0].rate
+            name = Staff.objects.filter(person_id=client.id)[0].client.person.user_name
+            client_name[client] = name
 
         rates[client] = rate
 
@@ -130,11 +136,14 @@ def delete_client(request):
     clients = Person.objects.filter(role=role)
 
     rates = dict()
+    client_name = dict()
     for client in clients:
         if role == 2:
             rate = Client.objects.filter(person_id=client.id)[0].rate
         else:
             rate = Staff.objects.filter(person_id=client.id)[0].rate
+            name = Staff.objects.filter(person_id=client.id)[0].client.person.user_name
+            client_name[client] = name
 
         rates[client] = rate
 
@@ -224,8 +233,11 @@ def staff_management(request):
             staff = Staff()
             staff.person_id = person.id
 
+        staff.client_id = (request.POST['client'])
         staff.rate = rate
         staff.save()
+
+    clients = Client.objects.all()
 
     return render_to_response('app_admin/staffManagement.html', locals(), context_instance=RequestContext(request))
 
@@ -256,7 +268,7 @@ def meal_management(request):
         # create roster
         staffs = Staff.objects.filter()
 
-        absent_staff = Absent.objects.filter(absent=request.POST['date'])
+        absent_staff = Staff.objects.filter(client_id=int(request.POST['client']))
         staff_ids = [staff.id for staff in absent_staff]
 
         # create new meal
@@ -271,7 +283,7 @@ def meal_management(request):
                 tp_roster.staff_id = roster.id
                 tp_roster.save()
 
-    clients = Person.objects.filter(role=2)
+    clients = Client.objects.all()
 
     return render_to_response('app_admin/mealManagement.html', locals(), context_instance=RequestContext(request))
 
@@ -321,14 +333,17 @@ def delete_meal(request):
 
     return render_to_response('app_admin/mealList.html', locals(), context_instance=RequestContext(request))
 
-@login_required(role="admin")
+@login_required(role="client")
 def roster_management(request):
+
+    user = request.session['user']
+
     meal_id = int(request.GET['meal_id'])
 
     return render_to_response('app_admin/rosterManagement.html', locals(), context_instance=RequestContext(request))
 
 
-@login_required(role="admin")
+@login_required(role="client")
 def roster_list(request):
     meal_id = int(request.GET['meal_id'])
 
@@ -339,7 +354,7 @@ def roster_list(request):
 
 
 @csrf_exempt
-@login_required(role="admin")
+@login_required(role="client")
 def delete_roster(request):
     id = int(request.POST['id'])
     meal_id = int(request.POST['meal_id'])
@@ -350,3 +365,48 @@ def delete_roster(request):
     rosters = Roster.objects.filter(meal_id=meal_id)
 
     return render_to_response('app_admin/rosterList.html', locals(), context_instance=RequestContext(request))
+
+
+@login_required(role="client")
+def meal_view(request):
+    user = request.session['user']
+
+    meals = Meal.objects.filter(client_id=user['id'])
+
+    return render_to_response("app_admin/client/mealManagement.html", locals(), context_instance=RequestContext(request))
+
+
+@login_required(role="client")
+def send_comment(request):
+    meal_id = request.GET['meal_id']
+    comment = request.GET['comment']
+
+    meal = Meal.objects.filter(pk=meal_id)[0]
+    meal.meal_comment = comment
+    meal.save()
+
+    return render_to_response("app_admin/client/mealManagement.html", locals(), context_instance=RequestContext(request))
+
+
+@login_required(role="client")
+def client_profile(request):
+    user = request.session['user']
+
+    client = Client.objects.filter(person_id=user['id'])[0]
+
+    return render_to_response("app_admin/client/profile.html", locals(), context_instance=RequestContext(request))
+
+
+@login_required(role="client")
+def staff_list(request):
+    user = request.session['user']
+
+    clients = Staff.objects.filter(client=user['id'])
+
+    return render_to_response("app_admin/client/staffList.html", locals(), context_instance=RequestContext(request))
+
+
+def register_staff(request):
+    clients = Client.objects.all()
+
+    return render_to_response("app_admin/client/registerStaff.html", locals(), context_instance=RequestContext(request))
