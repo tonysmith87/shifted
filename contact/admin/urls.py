@@ -32,4 +32,6 @@ urlpatterns = [
     url(r'staff-list/$', views.staff_list, name="staff-list"),
 
     url(r'register-staff/$', views.register_staff, name="register-staff"),
+    url(r'check-staff/$', views.check_staff, name="check-staff"),
+    url(r'edit-staff/$', views.edit_staff, name="edit-staff"),
 ]

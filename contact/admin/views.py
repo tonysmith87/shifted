@@ -22,6 +22,7 @@ def login(request):
         username = request.POST['username']
         password = request.POST['password']
 
+
         # get a user from database based on username and password
         user = Person.objects.filter(user_name=username, password=password)
 
@@ -41,6 +42,8 @@ def login(request):
                 return redirect("/admin/client-management")
             elif user[0].role == 2:
                 return redirect("/admin/meal-view")
+            elif user[0].role == 3:
+                return redirect("/admin/edit-staff")
             else:
                 return redirect("/admin/login/")
 
@@ -408,5 +411,122 @@ def staff_list(request):
 
 def register_staff(request):
     clients = Client.objects.all()
+    mode = -1
+
+    # add a staff
+    if request.POST:
+        person = Person()
+        person.register_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+        person.first_name = request.POST['first_name']
+        person.last_name = request.POST['last_name']
+        person.user_name = request.POST['user_name']
+        person.email = request.POST['email']
+        person.password = request.POST['password']
+        person.user_name = request.POST['user_name']
+        person.role = 3
+        person.save()
+        person = Person.objects.get(email=person.email)
+
+        client = Client.objects.get(pk=int(request.POST['client']))
+
+        staff = Staff()
+        staff.person = person
+        staff.rate = client.rate
+        staff.client = client
+        staff.restriction = request.POST['restrictions']
+        staff.apply = int(request.POST['apply'])
+        staff.apply_message = request.POST['apply_message']
+        staff.save()
+        staff = Staff.objects.get(person_id=person.id)
+
+        absent_dates = request.POST['absent'].split(",")
+        for absent_date in absent_dates:
+            absent = Absent()
+            absent.staff = staff
+            absent.absent = absent_date
+            absent.save()
+
+        return redirect("/admin/login/")
 
     return render_to_response("app_admin/client/registerStaff.html", locals(), context_instance=RequestContext(request))
+
+
+@csrf_exempt
+def check_staff(request):
+    type = request.GET['type']
+    value = request.GET['value']
+    user_id = int(request.GET['user_id'])
+
+    print user_id
+    res = dict()
+
+    if type == 'username':  # check only username if it's in database
+        if user_id == -1:
+            user = Person.objects.filter(user_name=value)
+        else:
+            user = Person.objects.filter(Q(user_name=value) & ~Q(pk=user_id))
+    else:   # check only email if it's in database
+        if user_id == -1:
+            user = Person.objects.filter(email=value)
+        else:
+            user = Person.objects.filter(Q(email=value) & ~Q(pk=user_id))
+
+    if len(user) > 0:   # if there is a person who has the username and the password in database
+        res['existed'] = True
+    else:               # otherwise
+        res['existed'] = False
+
+    return HttpResponse(json.dumps(res))
+
+
+@csrf_exempt
+@login_required(role="staff")
+def edit_staff(request):
+    user = request.session['user']
+
+    mode = user['id']
+    staff = Staff.objects.get(person_id=mode)
+    absents = Absent.objects.filter(staff=staff)
+
+    str_absent = [absent.absent for absent in absents]
+    str_absent = ','.join(str_absent)
+    clients = Client.objects.all()
+
+    # add a staff
+    if request.POST:
+        person = Person.objects.get(pk=mode)
+        person.register_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+        person.first_name = request.POST['first_name']
+        person.last_name = request.POST['last_name']
+        person.user_name = request.POST['user_name']
+        person.email = request.POST['email']
+        person.password = request.POST['password']
+        person.user_name = request.POST['user_name']
+        person.role = 3
+        person.save()
+        person = Person.objects.get(email=person.email)
+
+        client = Client.objects.get(pk=int(request.POST['client']))
+
+        staff = Staff.objects.get(person_id=mode)
+        staff.person = person
+        staff.rate = client.rate
+        staff.client = client
+        staff.restriction = request.POST['restrictions']
+        staff.apply = int(request.POST['apply'])
+        staff.apply_message = request.POST['apply_message']
+        staff.save()
+        staff = Staff.objects.get(person_id=person.id)
+
+        absent_dates = request.POST['absent'].split(",")
+        Absent.objects.filter(staff=staff).delete()
+
+        for absent_date in absent_dates:
+            absent = Absent()
+            absent.staff = staff
+            absent.absent = absent_date
+            absent.save()
+
+    return render_to_response('app_admin/client/editStaff.html', locals(), context_instance=RequestContext(request))

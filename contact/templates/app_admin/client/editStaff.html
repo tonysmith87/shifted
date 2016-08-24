@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sifted Admin{% endblock %}
+{% block extra_css %}
+    <link href="{% static 'vendors/bower_components/bootstrap-select/dist/css/bootstrap-select.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bower_components/animate.css/pepper-ginder-custom.css' %}" rel="stylesheet">
+    <style>
+        .actionBar{
+            text-align: right;
+        }
+        .bootgrid-header .search {
+            display: inline-block;
+            margin: 0 20px 0 0;
+        }
+        table.ui-datepicker-calendar{
+            background-color: rgba(255,0,0,0);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section id="content" style="margin-top:50px;">
+        <div class="container">
+            <div class="card">
+                <form class="form-horizontal" role="form" method="post" id="createForm">
+                <input type="hidden" name="type" class="c-type" method="post" value="{{ mode }}"/>
+                    {% csrf_token %}
+                    <div class="card-header">
+                        <h2>Let's eat!</h2>
+                    </div>
+
+                    <div class="card-body card-padding">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">First Name</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="text" name="first_name" class="form-control input-sm first-name" placeholder="First Name" value="{{ staff.person.first_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Last Name</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="text" name="last_name" class="form-control input-sm last-name" placeholder="Last Name" value="{{ staff.person.last_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">User Name</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="text" name="user_name" class="form-control input-sm user-name" placeholder="User Name" value="{{ staff.person.user_name }}" required onblur="check('username', this)">
+                                    <div class="alert-danger alert-username" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Email</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="email" name="email" class="form-control input-sm last-name" placeholder="Email" value="{{ staff.person.email }}" required onblur="check('email', this)">
+                                    <div class="alert-danger alert-email" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Password</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="password" name="password" class="form-control input-sm last-name" placeholder="Password" value="{{ staff.person.password }}" required>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Company</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <select name="client" class="client" data-live-search="true" required style="display: inline-block; overflow: hidden; width: 100%; text-align: left; height: 35px;">
+                                        {% for tp_user in clients %}
+                                        <option value="{{ tp_user.id }}" {% if staff.client.id == tp_user.id %} selected {% endif %}>{{ tp_user.person.first_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Restrictions</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <select class="restrictions" name="restrictions" required style="display: inline-block; overflow: hidden; width: 100%; text-align: left; height: 35px;">
+                                        <option value="0" {% if staff.restriction == "0" %} selected {% endif %}>None</option>
+                                        <option value="1" {% if staff.restriction == "1" %} selected {% endif %}>Vegan</option>
+                                        <option value="2" {% if staff.restriction == "2" %} selected {% endif %}>Veg</option>
+                                        <option value="3" {% if staff.restriction == "3" %} selected {% endif %}>Paleo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Apply</label>
+                            <div class="col-sm-10">
+                                <div class="radio">
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="0" {% if staff.apply == 0 %} checked {% endif %}>
+                                        <i class="input-helper"></i>
+                                        Gluten Free
+                                    </label>
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="1" {% if staff.apply == 1 %} checked {% endif %}>
+                                        <i class="input-helper"></i>
+                                        Dairy Free
+                                    </label>
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="2" {% if staff.apply == 2 %} checked {% endif %}>
+                                        <i class="input-helper"></i>
+                                        Soy Free
+                                    </label>
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="3" {% if staff.apply == 3 %} checked {% endif %}>
+                                        <i class="input-helper"></i>
+                                        Other
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group apply-message" {% if staff.apply != 3 %} style="display:none;" {% endif %}>
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="text" name="apply_message" class="form-control input-sm user-name" placeholder="Apply Message" value="{{ staff.apply_message }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Absent</label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <li class="demo">
+                                        <div id="withAltField" class="box">
+                                            <input type="text" id="altField"  name="absent" class="form-control input-sm rate" value="09/19/2014, 09/21/2014" required>
+                                            <div id="with-altField"></div>
+                                        </div>
+                                        <div class="code-box" style="display: None;">
+                                            <h4>Code used</h4>
+                                            <pre class="code prettyprint">
+                                                $('#with-altField').multiDatesPicker({
+                                                altField: '#altField'
+                                                });</pre>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+    </section>
+
+{% endblock %}
+
+{% block footer %}
+    Copyright &copy; 2016 Footer
+{% endblock %}
+        <!-- Javascript Libraries -->
+{% block extra_assests %}
+    <script src="{% static 'vendors/bower_components/bootstrap-select/dist/js/bootstrap-select.js' %}"></script>
+
+    <script src="{% static 'vendors/bower_components/jquery/dist/jquery-ui-1.11.1.js' %}"></script>
+    <script src="{% static 'vendors/bower_components/jquery/dist/jquery-ui.multidatespicker.js' %}"></script>
+
+    <script>
+        var latestMDPver = $.ui.multiDatesPicker.version;
+        var lastMDPupdate = '2014-09-19';
+
+        $(document).ready(function(){
+            // Version //
+				//$('title').append(' v' + latestMDPver);
+				$('.mdp-version').text('v' + latestMDPver);
+				$('#mdp-title').attr('title', 'last update: ' + lastMDPupdate);
+
+				// Documentation //
+				$('i:contains(type)').attr('title', '[Optional] accepted values are: "allowed" [default]; "disabled".');
+				$('i:contains(format)').attr('title', '[Optional] accepted values are: "string" [default]; "object".');
+				$('#how-to h4').each(function () {
+					var a = $(this).closest('li').attr('id');
+					$(this).wrap('<'+'a href="#'+a+'"></'+'a>');
+				});
+				$('#demos .demo').each(function () {
+					var id = $(this).find('.box').attr('id') + '-demo';
+					$(this).attr('id', id)
+						.find('h3').wrapInner('<'+'a href="#'+id+'"></'+'a>');
+				});
+
+				// Run Demos
+				$('.demo .code').each(function() {
+					eval($(this).attr('title','NEW: edit this code and test it!').text());
+					this.contentEditable = true;
+				}).focus(function() {
+					if(!$(this).next().hasClass('test'))
+						$(this)
+							.after('<button class="test">test</button>')
+							.next('.test').click(function() {
+								$(this).closest('.demo').find('.hasDatepicker').multiDatesPicker('destroy');
+								eval($(this).prev().text());
+								$(this).remove();
+							});
+				});
+
+                $("form input:radio").change(function(){
+                    value = $(this).val()
+                    if(value == "3"){
+                        $(".apply-message").show()
+                    }
+                    else
+                        $(".apply-message").hide()
+                })
+
+            // register event on form, not submit button
+            $('#createForm').submit(onSubmit)
+
+            $("#altField").val('{{ str_absent }}')
+        })
+
+        function check(type, obj){
+            value = $(obj).val()
+            user_id = $(".c-type").val()
+            $.ajax({
+                type: 'get',
+                url: '{% url "check-staff" %}',
+                data: {'type': type, 'value': value, 'user_id': user_id},
+                dataType: 'json',
+                success: function (res) {
+                    if(res['existed']){
+                        $(".alert-"+type).attr("style", "display:block")
+                        $(".alert-"+type).html("This " + type + " is already used!")
+                    }
+                    else{
+                        $(".alert-"+type).attr("style", "display:none")
+                        $(".alert-"+type).html("")
+                    }
+                }
+            });
+        }
+
+        function onSubmit(){
+            // get error message.
+            username = $(".alert-username").html()
+            email = $(".alert-email").html()
+            // if there is error message, cancel submitting.
+            if (username != "" || email != "")
+                return false
+        }
+    </script>
+{% endblock %}
+
+

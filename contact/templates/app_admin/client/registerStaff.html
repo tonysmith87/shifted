@@ -24,7 +24,9 @@
     <section id="content" style="margin-top:50px;">
         <div class="container">
             <div class="card">
-                <form class="form-horizontal" role="form">
+                <form class="form-horizontal" role="form" method="post" id="createForm">
+                <input type="hidden" name="type" class="c-type" method="post" value="{{ mode }}"/>
+                    {% csrf_token %}
                     <div class="card-header">
                         <h2>Sign up</h2>
                     </div>
@@ -34,7 +36,7 @@
                             <label class="col-sm-2 control-label">First Name</label>
                             <div class="col-sm-10">
                                 <div class="fg-line">
-                                    <input type="text" class="form-control input-sm first-name" placeholder="First Name" required>
+                                    <input type="text" name="first_name" class="form-control input-sm first-name" placeholder="First Name" required>
                                 </div>
                             </div>
                         </div>
@@ -42,7 +44,7 @@
                             <label class="col-sm-2 control-label">Last Name</label>
                             <div class="col-sm-10">
                                 <div class="fg-line">
-                                    <input type="password" class="form-control input-sm last-name" placeholder="Last Name">
+                                    <input type="text" name="last_name" class="form-control input-sm last-name" placeholder="Last Name" required>
                                 </div>
                             </div>
                         </div>
@@ -50,7 +52,8 @@
                             <label class="col-sm-2 control-label">User Name</label>
                             <div class="col-sm-10">
                                 <div class="fg-line">
-                                    <input type="text" class="form-control input-sm user-name" placeholder="User Name">
+                                    <input type="text" name="user_name" class="form-control input-sm user-name" placeholder="User Name" required onblur="check('username', this)">
+                                    <div class="alert-danger alert-username" style="display: none;"></div>
                                 </div>
                             </div>
                         </div>
@@ -58,7 +61,8 @@
                             <label class="col-sm-2 control-label">Email</label>
                             <div class="col-sm-10">
                                 <div class="fg-line">
-                                    <input type="email" class="form-control input-sm last-name" placeholder="Email">
+                                    <input type="email" name="email" class="form-control input-sm last-name" placeholder="Email" required onblur="check('email', this)">
+                                    <div class="alert-danger alert-email" style="display: none;"></div>
                                 </div>
                             </div>
                         </div>
@@ -66,15 +70,8 @@
                             <label class="col-sm-2 control-label">Password</label>
                             <div class="col-sm-10">
                                 <div class="fg-line">
-                                    <input type="password" class="form-control input-sm last-name" placeholder="Password">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Rate</label>
-                            <div class="col-sm-10">
-                                <div class="fg-line">
-                                    <input type="number" class="form-control input-sm rate" placeholder="Rate">
+                                    <input type="password" name="password" class="form-control input-sm last-name" placeholder="Password" required>
+
                                 </div>
                             </div>
                         </div>
@@ -82,7 +79,7 @@
                             <label class="col-sm-2 control-label">Company</label>
                             <div class="col-sm-10">
                                 <div class="fg-line">
-                                    <select class="selectpicker client" name="client" data-live-search="true">
+                                    <select class="selectpicker client" name="client" data-live-search="true" required>
                                         {% for tp_user in clients %}
                                         <option value="{{ tp_user.id }}">{{ tp_user.person.first_name }}</option>
                                         {% endfor %}
@@ -94,7 +91,7 @@
                             <label class="col-sm-2 control-label">Restrictions</label>
                             <div class="col-sm-10">
                                 <div class="fg-line">
-                                    <select class="selectpicker restrictions" name="restrictions">
+                                    <select class="selectpicker restrictions" name="restrictions" required>
                                         <option value="0">None</option>
                                         <option value="1">Vegan</option>
                                         <option value="2">Veg</option>
@@ -107,27 +104,36 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Apply</label>
                             <div class="col-sm-10">
-                                <div>
-                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
-                                        <input type="checkbox" value="option1" name="apply">
+                                <div class="radio">
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="0" checked>
                                         <i class="input-helper"></i>
                                         Gluten Free
                                     </label>
-                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
-                                        <input type="checkbox" value="option2" name="apply">
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="1">
                                         <i class="input-helper"></i>
                                         Dairy Free
                                     </label>
-                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
-                                        <input type="checkbox" value="option3" name="apply">
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="2">
                                         <i class="input-helper"></i>
                                         Soy Free
                                     </label>
-                                    <label class="checkbox checkbox-inline m-r-20" style="padding-top: 0px;">
-                                        <input type="checkbox" value="option3" name="apply">
+                                    <label class="radio-inline m-r-20" style="padding-top: 0px;">
+                                        <input type="radio" name="apply" value="3">
                                         <i class="input-helper"></i>
                                         Other
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group apply-message" style="display:none;">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <div class="fg-line">
+                                    <input type="text" name="apply_message" class="form-control input-sm user-name" placeholder="Apply Message">
                                 </div>
                             </div>
                         </div>
@@ -137,7 +143,7 @@
                                 <div class="fg-line">
                                     <li class="demo">
                                         <div id="withAltField" class="box">
-                                            <input type="text" id="altField"  class="form-control input-sm rate" value="09/19/2014, 09/21/2014" >
+                                            <input type="text" id="altField"  name="absent" class="form-control input-sm rate" value="09/19/2014, 09/21/2014" required>
                                             <div id="with-altField"></div>
                                         </div>
                                         <div class="code-box" style="display: None;">
@@ -214,7 +220,50 @@
 								$(this).remove();
 							});
 				});
+
+                $("form input:radio").change(function(){
+                    value = $(this).val()
+                    if(value == "3"){
+                        $(".apply-message").show()
+                    }
+                    else
+                        $(".apply-message").hide()
+                })
+
+            // register event on form, not submit button
+            $('#createForm').submit(onSubmit)
         })
+
+        function check(type, obj){
+            value = $(obj).val()
+            user_id = $(".c-type").val()
+
+            $.ajax({
+                type: 'get',
+                url: '{% url "check-staff" %}',
+                data: {'type': type, 'value': value, 'user_id': -1},
+                dataType: 'json',
+                success: function (res) {
+                    if(res['existed']){
+                        $(".alert-"+type).attr("style", "display:block")
+                        $(".alert-"+type).html("This " + type + " is already used!")
+                    }
+                    else{
+                        $(".alert-"+type).attr("style", "display:none")
+                        $(".alert-"+type).html("")
+                    }
+                }
+            });
+        }
+
+        function onSubmit(){
+            // get error message.
+            username = $(".alert-username").html()
+            email = $(".alert-email").html()
+            // if there is error message, cancel submitting.
+            if (username != "" || email != "")
+                return false
+        }
     </script>
 {% endblock %}
 

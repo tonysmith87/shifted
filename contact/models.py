@@ -81,7 +81,9 @@ class Staff(models.Model):
     person = models.ForeignKey('Person')
     rate = models.IntegerField(default=0, null=True)
     client = models.ForeignKey('Client')
-
+    restriction = models.CharField(max_length=255, blank=True, default="")
+    apply = models.IntegerField(max_length=255, blank=True, default=0)
+    apply_message = models.TextField(default="", blank=True, null=True)
 
     class Meta:
         db_table = 'Staff'
